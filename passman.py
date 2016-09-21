@@ -1,15 +1,12 @@
 import random
 import atexit
 import json
+import string
 from Tkinter import *
 
-uppercase_letters = "A B C D E F G H I J K L M N O P Q R S T U V W X Y Z".split()
-lowercase_letters = [x.lower() for x in uppercase_letters]
-numbers = [0,1,2,3,4,5,6,7,8,9]
-special_chars = ['!','$','%','@','#']
-character_classes = [uppercase_letters, lowercase_letters, numbers, special_chars]
-
+character_classes = [string.ascii_uppercase, string.ascii_lowercase, string.digits, '!$%@#']
 entries = []
+
 
 def generatePassword(allowed_classes, length):
     pw = ""
@@ -41,6 +38,7 @@ def saveList():
 
 def copypw(e):
     print "copying password"
+
 
 def edit(e):
     print "edit action"
@@ -139,8 +137,6 @@ def renderCreateView():
     Label(fr, text="Password: ").grid(row=2, sticky=W)
     Label(fr, text="Password Length: ").grid(row=3, sticky=W)
     Label(fr, text="Allowed Characters: ").grid(row=4, sticky=W)
-    error_lbl = Label(fr, text="", fg="red")
-    error_lbl.grid(row=8, column=0, columnspan=3)
 
     # Create widgets
     website_e = Entry(fr, width=30)
@@ -182,6 +178,5 @@ root.maxsize(400, 225)
 root.minsize(400, 225)
 
 renderListView()
-
 
 root.mainloop()
