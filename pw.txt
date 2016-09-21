@@ -1,1 +1,0 @@
-[{"website": "ares.decipherinc.com", "username": "sam", "password": "$62$4kPQWt4S5r9w@$UhE@e9oDy!PL"}, {"website": "something.com", "username": "beem", "password": "abacus"}, {"website": "derp.com", "username": "derperino", "password": "snerperino"}]
