@@ -19,7 +19,7 @@ def generatePassword(allowed_classes, length):
 
 def loadList():
     global entries
-    f = open("pw.txt", "r+")
+    f = open("pw.txt", "w+")
 
     contents = f.read()
 
@@ -153,7 +153,7 @@ def renderCreateView(index=None):
     website_e = Entry(fr, width=30)
     username_e = Entry(fr, width=30)
     password_e = Entry(fr, width=30)
-    len_e = Spinbox(fr, width=5, to=99)
+    len_e = Spinbox(fr, width=10, to=99)
 
     if index >= 0:
         website_e.insert(END, entries[index]['website'])
@@ -161,7 +161,7 @@ def renderCreateView(index=None):
         password_e.insert(END, entries[index]['password'])
         len_e.insert(END, len(entries[index]['password']))
     else:
-        len_e.insert(END, "10")
+        len_e.insert(END, "20")
 
     website_e.focus()
 
