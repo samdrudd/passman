@@ -19,12 +19,10 @@ def generatePassword(allowed_classes, length):
 
 def loadList():
     f = open("pw.txt", "r")
-
     if f:
         for line in f:
             entry = json.loads(line)
             entries.append(entry)
-
     f.close()
 
 
@@ -36,51 +34,51 @@ def saveList():
     f.close()
 
 
-def copypw(e):
-    print "copying password"
-
-
-def edit(e):
-    print "edit action"
-
-
-def create(e):
-    clearView()
-    renderCreateView()
-
-
 def clearView():
     for widget in root.winfo_children():
         widget.destroy()
 
 
 def renderListView():
+
+    def btn_Create():
+        clearView()
+        renderCreateView()
+
+    def btn_Edit():
+        try:
+            ind = int(entries_list.curselection()[0])
+        except:
+            return
+        clearView()
+        renderCreateView(index=ind)
+
+    def btn_CopyPassword():
+        print "copying password"
+
     buttonframe = Frame(root)
 
-    button1 = Button(buttonframe, text="Create New Entry")
+    button1 = Button(buttonframe, text="Create New Entry", command=btn_Create)
     button1.pack(fill=X, ipadx=10)
-    button1.bind("<Button-1>", create)
 
-    button2 = Button(buttonframe, text="Edit Selected Entry")
+    button2 = Button(buttonframe, text="Edit Selected Entry", command=btn_Edit)
     button2.pack(fill=X, pady=2)
-    button2.bind('<Button-1>', edit)
 
-    button3 = Button(buttonframe, text="Copy Selected Password")
+    button3 = Button(buttonframe, text="Copy Selected Password", command=btn_CopyPassword)
     button3.pack(fill=X, pady=2)
-    button3.bind('<Button-1>', copypw)
 
     entries_list = Listbox(root, width=35, bd=0)
     entries_list.pack(side=LEFT, padx=5, pady=5, ipadx=5, ipady=5, fill=Y)
     buttonframe.pack(side=LEFT, padx=5, pady=5, fill=X, anchor='n')
 
     if entries:
-        for entry in entries:
-            entries_list.insert(END, entry['website'])
+        for x in xrange(len(entries)):
+            entries_list.insert(x, entries[x]['website'])
     else:
         entries_list.insert(END, "No entries found!")
 
 
-def renderCreateView():
+def renderCreateView(index=None):
     allow_uppercase = IntVar()
     allow_lowercase = IntVar()
     allow_numbers = IntVar()
@@ -90,18 +88,14 @@ def renderCreateView():
         clearView()
         renderListView()
 
-
     # Generate password button callback
     def btn_GenPass():
         length = len_e.get()
         if length:
             try:
                 length = int(length)
-                error_lbl.configure(text="")
-                len_e.configure(highlightbackground=None)
             except:
-                error_lbl.configure(text="Please enter a number.")
-                len_e.configure(highlightbackground="red")
+                return
         else:
             return
 
@@ -124,8 +118,14 @@ def renderCreateView():
         if website == "" or username == "" or password == "":
             return
 
-        ent = {'website': website, 'username': username, 'password': password}
-        entries.append(ent)
+        if index >= 0:
+            entries[index]['website'] = website
+            entries[index]['username'] = username
+            entries[index]['password'] = password
+        else:
+            ent = {'website': website, 'username': username, 'password': password}
+            entries.append(ent)
+
         btn_GoBack()
 
     fr = Frame(root, padx=20, pady=20)
@@ -142,14 +142,28 @@ def renderCreateView():
     website_e = Entry(fr, width=30)
     username_e = Entry(fr, width=30)
     password_e = Entry(fr, width=30)
-    len_e = Spinbox(fr, width=5)
+    len_e = Spinbox(fr, width=5, to=99)
+
+    if index >= 0:
+        website_e.insert(END, entries[index]['website'])
+        username_e.insert(END, entries[index]['username'])
+        password_e.insert(END, entries[index]['password'])
+        len_e.insert(END, len(entries[index]['password']))
+    else:
+        len_e.insert(END, "10")
+
+    website_e.focus()
 
     uppercase_chk = Checkbutton(fr, text="Uppercase letters (A-Z)", variable=allow_uppercase)
     lowercase_chk = Checkbutton(fr, text="Lowercase letters (a-z)", variable=allow_lowercase)
     numbers_chk = Checkbutton(fr, text="Numbers (0-9)", variable=allow_numbers)
     special_chk = Checkbutton(fr, text="Special characters (!$%@#)", variable=allow_special)
 
-    create_btn = Button(fr, text="Create", command=btn_Create)
+    create_btn_text = "Create"
+    if index >= 0:
+        create_btn_text = "Edit"
+
+    create_btn = Button(fr, text=create_btn_text, command=btn_Create)
     generate_btn = Button(fr, text="Generate Password", command=btn_GenPass)
     back_btn = Button(fr, text="Back", command=btn_GoBack)
 
