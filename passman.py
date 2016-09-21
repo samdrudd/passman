@@ -107,10 +107,14 @@ def renderCreateView(index=None):
             return
 
         allowed_classes = []
-        if allow_uppercase.get() == 1: allowed_classes.append(0)
-        if allow_lowercase.get() == 1: allowed_classes.append(1)
-        if allow_numbers.get() == 1: allowed_classes.append(2)
-        if allow_special.get() == 1: allowed_classes.append(3)
+        if allow_uppercase.get() == 1:
+            allowed_classes.append(0)
+        if allow_lowercase.get() == 1:
+            allowed_classes.append(1)
+        if allow_numbers.get() == 1:
+            allowed_classes.append(2)
+        if allow_special.get() == 1:
+            allowed_classes.append(3)
 
         pw = generatePassword(allowed_classes, length)
 
