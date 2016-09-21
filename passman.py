@@ -18,19 +18,25 @@ def generatePassword(allowed_classes, length):
 
 
 def loadList():
-    f = open("pw.txt", "r")
-    if f:
-        for line in f:
-            entry = json.loads(line)
-            entries.append(entry)
+    global entries
+    f = open("pw.txt", "r+")
+
+    contents = f.read()
+
+    if contents == "":
+        f.close()
+        return
+
+    entries = json.loads(contents)
+
     f.close()
 
 
 @atexit.register
 def saveList():
+    global entries
     f = open("pw.txt", "r+")
-    for entry in entries:
-        f.write(json.dumps(entry) + '\n')
+    f.write(json.dumps(entries))
     f.close()
 
 
@@ -40,6 +46,7 @@ def clearView():
 
 
 def renderListView():
+    global entries
 
     def btn_Create():
         clearView()
@@ -59,7 +66,7 @@ def renderListView():
     buttonframe = Frame(root)
 
     button1 = Button(buttonframe, text="Create New Entry", command=btn_Create)
-    button1.pack(fill=X, ipadx=10)
+    button1.pack(fill=X, pady=(0,2))
 
     button2 = Button(buttonframe, text="Edit Selected Entry", command=btn_Edit)
     button2.pack(fill=X, pady=2)
@@ -188,8 +195,8 @@ root = Tk()
 loadList()
 
 root.title("PassMan")
-root.maxsize(400, 225)
-root.minsize(400, 225)
+root.maxsize(640, 480)
+root.minsize(640, 480)
 
 renderListView()
 
