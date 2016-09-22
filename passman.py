@@ -2,6 +2,7 @@ import random
 import atexit
 import json
 import string
+import sys
 from Tkinter import *
 
 character_classes = [string.ascii_uppercase, string.ascii_lowercase, string.digits, '!$%@#']
@@ -19,15 +20,25 @@ def generatePassword(allowed_classes, length):
 
 def loadList():
     global entries
-    f = open("pw.txt", "w+")
 
-    contents = f.read()
+    # Attempt to open the file for reading
+    try:
+        f = open("pw.txt", "r")
+        contents = f.read()
+    except IOError as e:
+        print "File could not be opened:\n\t" + e.message.title()
+        return
 
+    # Do nothing if file is empty
     if contents == "":
         f.close()
         return
 
-    entries = json.loads(contents)
+    # Attempt to convert file contents to JSON
+    try:
+        entries = json.loads(contents)
+    except ValueError as e:
+        print "File contents not valid JSON:\n\t" + e.message.title()
 
     f.close()
 
@@ -35,9 +46,14 @@ def loadList():
 @atexit.register
 def saveList():
     global entries
-    f = open("pw.txt", "r+")
-    f.write(json.dumps(entries))
-    f.close()
+
+    # Attempt to open the file to save
+    try:
+        f = open("pw.txt", "w+")
+        f.write(json.dumps(entries))
+        f.close()
+    except IOError as e:
+        print "Could not open file for saving:\n\t" + e.message.title()
 
 
 def clearView():
