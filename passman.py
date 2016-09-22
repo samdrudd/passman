@@ -4,6 +4,7 @@ import json
 import string
 import sys
 from Tkinter import *
+import tkMessageBox
 
 character_classes = [string.ascii_uppercase, string.ascii_lowercase, string.digits, '!$%@#']
 entries = []
@@ -77,7 +78,18 @@ def renderListView():
         renderCreateView(index=ind)
 
     def btn_CopyPassword():
-        print "copying password"
+        current_selection = entries_list.curselection() 
+        if current_selection:
+            selected_entry = entries_list.get(current_selection[0])
+            if selected_entry not in "No entries found!":
+                root.clipboard_clear()
+                root.clipboard_append(selected_entry)
+                tkMessageBox.showinfo("Copy Password", "Password has been copied to clipboard")
+            else:
+                tkMessageBox.showinfo("Copy Password", "Please select a password to copy")
+        else:
+            tkMessageBox.showinfo("Copy Password", "Please select a password to copy")
+        
 
     buttonframe = Frame(root)
 
