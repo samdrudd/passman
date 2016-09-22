@@ -71,13 +71,23 @@ def renderListView():
     def btn_Edit():
         try:
             ind = int(entries_list.curselection()[0])
-        except:
+        except IndexError:
+            print "No entry selected"
             return
+
         clearView()
         renderCreateView(index=ind)
 
     def btn_CopyPassword():
-        print "copying password"
+        try:
+            ind = int(entries_list.curselection()[0])
+        except IndexError:
+            print "No entry selected"
+            return
+
+        pw = entries[ind]['password']
+        root.clipboard_clear()
+        root.clipboard_append(pw)
 
     buttonframe = Frame(root)
 
@@ -97,8 +107,6 @@ def renderListView():
     if entries:
         for x in xrange(len(entries)):
             entries_list.insert(x, entries[x]['website'])
-    else:
-        entries_list.insert(END, "No entries found!")
 
 
 def renderCreateView(index=None):
@@ -169,7 +177,7 @@ def renderCreateView(index=None):
     website_e = Entry(fr, width=30)
     username_e = Entry(fr, width=30)
     password_e = Entry(fr, width=30)
-    len_e = Spinbox(fr, width=10, to=99)
+    len_e = Entry(fr, width=3)
 
     if index >= 0:
         website_e.insert(END, entries[index]['website'])
@@ -177,7 +185,7 @@ def renderCreateView(index=None):
         password_e.insert(END, entries[index]['password'])
         len_e.insert(END, len(entries[index]['password']))
     else:
-        len_e.insert(END, "20")
+        len_e.insert(0, "20")
 
     website_e.focus()
 
