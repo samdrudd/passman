@@ -61,7 +61,7 @@ def clearView():
         widget.destroy()
 
 
-def dbl_copyPassword(e):
+def act_CopyPassword(e):
     try:
         ind = int(root.children['entries_list'].curselection()[0])
     except IndexError:
@@ -72,67 +72,63 @@ def dbl_copyPassword(e):
     root.clipboard_clear()
     root.clipboard_append(pw)
 
-# @TODO: Refactor this to move the event handlers outside this function
+
+def act_Create(e):
+    clearView()
+    renderCreateView()
+
+
+def act_Edit(e):
+    try:
+        ind = int(root.children['entries_list'].curselection()[0])
+    except IndexError:
+        print "No entry selected"
+        return
+
+    clearView()
+    renderCreateView(index=ind)
+
+
+def act_Delete(e):
+    try:
+        ind = int(root.children['entries_list'].curselection()[0])
+    except IndexError:
+        print "No entry selected"
+        return
+
+    title = "Delete"
+    mess = "Are you sure you want to delete this entry?\n\n" + entries[ind]['website']
+    icon = "warning"
+    res = tkMessageBox.askquestion(title=title, message=mess, icon=icon)
+
+    if res == 'yes':
+        del entries[ind]
+        root.children['entries_list'].delete(ind)
+
+
 def renderListView():
     global entries
 
-    def btn_Create():
-        clearView()
-        renderCreateView()
-
-    def btn_Edit():
-        try:
-            ind = int(entries_list.curselection()[0])
-        except IndexError:
-            print "No entry selected"
-            return
-
-        clearView()
-        renderCreateView(index=ind)
-
-    def btn_CopyPassword():
-        try:
-            ind = int(entries_list.curselection()[0])
-        except IndexError:
-            print "No entry selected"
-            return
-
-        pw = entries[ind]['password']
-        root.clipboard_clear()
-        root.clipboard_append(pw)
-
-    def btn_DeleteEntry():
-        try:
-            ind = int(entries_list.curselection()[0])
-        except IndexError:
-            print "No entry selected"
-            return
-
-        title = "Delete"
-        mess = "Are you sure you want to delete this entry?\n\n" + entries[ind]['website']
-        icon = "warning"
-        res = tkMessageBox.askquestion(title=title, message=mess, icon=icon)
-
-        if res == 'yes':
-            del entries[ind]
-            entries_list.delete(ind)
-
     buttonframe = Frame(root)
 
-    button1 = Button(buttonframe, text="Create New Entry", command=btn_Create)
+    button1 = Button(buttonframe, text="Create New Entry")
+    button1.bind("<Button-1>", act_Create)
     button1.pack(fill=X, pady=(0,2))
 
-    button2 = Button(buttonframe, text="Edit Selected Entry", command=btn_Edit)
+    button2 = Button(buttonframe, text="Edit Selected Entry")
+    button2.bind("<Button-1>", act_Edit)
     button2.pack(fill=X, pady=2)
 
-    button3 = Button(buttonframe, text="Copy Selected Password", command=dbl_copyPassword)
+    button3 = Button(buttonframe, text="Copy Selected Password")
+    button3.bind("<Button-1>", act_CopyPassword)
     button3.pack(fill=X, pady=2)
 
-    button4 = Button(buttonframe, text="Delete Selected Entry", command=btn_DeleteEntry)
+    button4 = Button(buttonframe, text="Delete Selected Entry")
+    button4.bind("<Button-1>", act_Delete)
     button4.pack(fill=X, pady=2)
 
     entries_list = Listbox(root, width=35, bd=0, name="entries_list")
-    entries_list.bind('<Double-Button-1>', dbl_copyPassword)
+    entries_list.bind('<Double-Button-1>', act_CopyPassword)
     entries_list.pack(side=LEFT, padx=5, pady=5, ipadx=5, ipady=5, fill=Y)
     buttonframe.pack(side=LEFT, padx=5, pady=5, fill=X, anchor='n')
 
