@@ -2,12 +2,16 @@ import random
 import atexit
 import json
 import string
+from time import sleep
+from Queue import Queue
+from threading import Thread
 from Tkinter import *
 import tkMessageBox
 
 character_classes = [string.ascii_uppercase, string.ascii_lowercase, string.digits, '!$%@#']
 entries = []
 
+q = Queue()
 
 def generatePassword(allowed_classes, length):
     pw = ""
@@ -56,6 +60,20 @@ def saveList():
         print "Could not open file for saving:\n\t" + e.message.title()
 
 
+def updateGUI():
+    while True:
+        item = q.get()
+        try:
+            fbl = root.children['buttonframe'].children['feedback_label']
+            fbl.configure(text=item)
+            sleep(5)
+            fbl.configure(text="")
+        except TclError as e:
+            print "Error trying to update GUI: \n\t" + e.message.title()
+        q.task_done()
+
+
+
 def clearView():
     for widget in root.winfo_children():
         widget.destroy()
@@ -71,6 +89,9 @@ def act_CopyPassword(e):
     pw = entries[ind]['password']
     root.clipboard_clear()
     root.clipboard_append(pw)
+
+    if root.children['buttonframe'].children['feedback_label'].cget("text") != "Password copied successfully":
+        q.put("Password copied successfully")
 
 
 def act_Create(e):
@@ -109,7 +130,7 @@ def act_Delete(e):
 def renderListView():
     global entries
 
-    buttonframe = Frame(root)
+    buttonframe = Frame(root, name="buttonframe")
 
     button1 = Button(buttonframe, text="Create New Entry")
     button1.bind("<Button-1>", act_Create)
@@ -126,6 +147,9 @@ def renderListView():
     button4 = Button(buttonframe, text="Delete Selected Entry")
     button4.bind("<Button-1>", act_Delete)
     button4.pack(fill=X, pady=2)
+
+    feedback = Label(buttonframe, text="", name="feedback_label", font=("Arial", 12, "italic"))
+    feedback.pack(fill=X, pady=2)
 
     entries_list = Listbox(root, width=35, bd=0, name="entries_list")
     entries_list.bind('<Double-Button-1>', act_CopyPassword)
@@ -247,6 +271,11 @@ def renderCreateView(index=None):
 
 
 root = Tk()
+
+t = Thread(target=updateGUI)
+t.daemon = True
+t.start()
+
 
 loadList()
 
