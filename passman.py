@@ -248,7 +248,7 @@ def renderCreateView(index=None):
 
     create_btn_text = "Create"
     if index >= 0:
-        create_btn_text = "Edit"
+        create_btn_text = "Save"
 
     create_btn = Button(fr, text=create_btn_text, command=btn_Create)
     generate_btn = Button(fr, text="Generate Password", command=btn_GenPass)
